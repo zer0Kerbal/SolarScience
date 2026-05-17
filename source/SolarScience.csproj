@@ -68,7 +68,7 @@
     <Compile Include="SolarExperimentKmi.cs" />
     <Compile Include="SolarExperimentStereo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Version.cs">
+    <Compile Include="Properties\version.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Version.tt</DependentUpon>
@@ -84,13 +84,17 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\TextTemplating\Microsoft.TextTemplating.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(DevEnvDir)\TextTransform.exe" "$(ProjectDir)Properties\Version.tt" 
+    <TextTemplatingTargets>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\TextTemplating\Microsoft.TextTemplating.targets</TextTemplatingTargets>
+    <TextTransformExe>$(DevEnvDir)TextTransform.exe</TextTransformExe>
+  </PropertyGroup>
+  <Import Project="$(TextTemplatingTargets)" Condition="Exists('$(TextTemplatingTargets)')" />
+  <PropertyGroup>
+    <PreBuildEvent Condition="Exists('$(TextTransformExe)')">"$(TextTransformExe)" "$(ProjectDir)Properties\Version.tt"
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>
+    <PostBuildEvent Condition="Exists('$(ProjectDir)..\_addonDeploy.bat')">
 set K112=$(K112)
 IF "%25K112%25"=="" (
 	ECHO Configuration error - K112 not specified in project.
@@ -99,7 +103,7 @@ IF "%25K112%25"=="" (
 	rem GOTO DONE
 )
 start /D $(ProjectDir)..\  /WAIT _addonDeploy.bat $(TargetDir) $(TargetFileName)
-if $(ConfigurationName) == Release start /D $(ProjectDir)..\   /WAIT _addonRelease.bat $(TargetDir) $(TargetFileName)
+if $(ConfigurationName) == Release if exist "$(ProjectDir)..\_addonRelease.bat" start /D $(ProjectDir)..\   /WAIT _addonRelease.bat $(TargetDir) $(TargetFileName)
 del $(TargetDir)\*.tmp
 :DONE
   </PostBuildEvent>
