@@ -57,7 +57,7 @@ namespace SolarScience
         /// <returns></returns>
         public bool CheckBody()
         {
-            if (vessel.mainBody.name == "Sun" && vessel.mainBody.GetAltitude(vessel.CoM) <= 10000000000d)
+            if (vessel.mainBody.name == "Sun" && vessel.mainBody.GetAltitude(vessel.CoM) <= 14700000000d)
             {
                 if (debugMode)
                     Debug.Log("[Solar Science] Triggered checkBody, returned true");
